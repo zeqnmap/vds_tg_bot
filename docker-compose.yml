@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  telegram-bot:
+    build: .
+    container_name: vds_tg_bot
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/Minsk
+      - PYTHONUNBUFFERED=1
+      - PYTHONTHREADS=8
+      - OMP_NUM_THREADS=8
+    volumes:
+      - ./logs:/app/logs
+      - ./.env:/app/.env
+      - ./vds_database.db:/app/vds_database.db
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
+    # доп настройки для производительности
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
