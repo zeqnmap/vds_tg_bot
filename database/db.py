@@ -33,7 +33,7 @@ class Database:
                             purpose TEXT,
                             period TEXT,
                             organization TEXT,
-                            attachment TEXT,
+                            file_path TEXT,
                             attachment_name TEXT,
                             attachment_type TEXT,
                             child_fullname TEXT,
@@ -121,7 +121,7 @@ class Database:
             purpose=None,
             period=None,
             organization=None,
-            attachment=None,
+            file_path=None,
             attachment_name=None,
             attachment_type=None,
             child_fullname=None,
@@ -136,13 +136,13 @@ class Database:
             await db.execute('''
                 INSERT INTO document_requests (
                     user_id, doc_type, fullname, purpose, period, organization,
-                    attachment, attachment_name, attachment_type,
+                    file_path, attachment_name, attachment_type,
                     child_fullname, child_birth, copy_type, vacation_type,
                     ref_type, petition_topic, doc_name
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ''', (
                 user_id, doc_type, fullname, purpose, period, organization,
-                attachment, attachment_name, attachment_type,
+                file_path, attachment_name, attachment_type,
                 child_fullname, child_birth, copy_type, vacation_type,
                 ref_type, petition_topic, doc_name
             ))

@@ -32,7 +32,6 @@ class CopyDoc(StatesGroup):
     fullname = State()
     copy_type = State()          # ксерокопия / заверенная
     organization = State()
-    # без формы
 
 class VacationDoc(StatesGroup):
     """Справка о периоде отпуска (пункт 4)"""
@@ -78,14 +77,14 @@ class OtherDoc(StatesGroup):
 @router.callback_query(F.data == "doc_menu")
 async def show_doc_menu(callback: CallbackQuery):
     text = ("📋 Пожалуйста, выберите документ, который Вам необходим:\n\n"
-            "1️⃣ -- Справка о заработной плате\n\n"
-            "2️⃣ -- Справка о периоде, месте работы и должности\n\n"
-            "3️⃣ -- Копия трудовой книжки\n\n"
-            "4️⃣ -- Справка о периоде отпуска\n\n"
-            "5️⃣ -- Справка о необеспеченности ребенка путевкой\n\n"
-            "6️⃣ -- Характеристика\n\n"
-            "7️⃣ -- Ходатайство\n\n"
-            "8️⃣ -- Другой документ\n\n")
+            "1️⃣ Справка о заработной плате\n\n"
+            "2️⃣ Справка о периоде, месте работы и занимаемой должности\n\n"
+            "3️⃣ Копия трудовой книжки\n\n"
+            "4️⃣ Справка о периоде отпуска\n\n"
+            "5️⃣ Справка о необеспеченности ребенка путевкой\n\n"
+            "6️⃣ Характеристика\n\n"
+            "7️⃣ Ходатайство\n\n"
+            "8️⃣ Другой документ\n\n")
     await callback.message.edit_text(text, reply_markup=get_doc_menu_keyboard())
     await callback.answer()
 
@@ -175,6 +174,7 @@ async def start_other(callback: CallbackQuery, state: FSMContext):
 @router.message(ReferenceDoc.fullname)
 @router.message(PetitionDoc.fullname)
 @router.message(OtherDoc.fullname)
+
 async def process_fullname(message: Message, state: FSMContext):
     fullname = message.text.strip()
     await state.update_data(fullname=fullname)
@@ -189,7 +189,8 @@ async def process_fullname(message: Message, state: FSMContext):
             [InlineKeyboardButton(text="📄 Налоговая", callback_data="purpose_tax")],
             [InlineKeyboardButton(text="🛒 Потребительский кредит", callback_data="purpose_consumer")],
             [InlineKeyboardButton(text="📦 Рассрочка на товары", callback_data="purpose_installment")],
-            [InlineKeyboardButton(text="✏️ Другое", callback_data="purpose_other")]
+            [InlineKeyboardButton(text="✏️ Другое", callback_data="purpose_other")],
+            [InlineKeyboardButton(text="🔙 Назад в меню документов", callback_data="back_to_doc_menu")]
         ])
         await message.answer("Выберите цель получения справки:", reply_markup=keyboard)
         await state.set_state(SalaryDoc.purpose)
@@ -209,7 +210,8 @@ async def process_fullname(message: Message, state: FSMContext):
     elif doc_type == "vacation":
         keyboard = InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text="🏖 Трудовой или социальный отпуск", callback_data="vacation_regular")],
-            [InlineKeyboardButton(text="👶 Отпуск по уходу за ребенком", callback_data="vacation_childcare")]
+            [InlineKeyboardButton(text="👶 Отпуск по уходу за ребенком", callback_data="vacation_childcare")],
+            [InlineKeyboardButton(text="🔙 Назад в меню документов", callback_data="back_to_doc_menu")]
         ])
         await message.answer("Выберите, какая справка нужна:", reply_markup=keyboard)
         await state.set_state(VacationDoc.vacation_type)
@@ -221,7 +223,8 @@ async def process_fullname(message: Message, state: FSMContext):
     elif doc_type == "reference":
         keyboard = InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text="🏭 Производственная характеристика", callback_data="ref_production")],
-            [InlineKeyboardButton(text="📄 В произвольной форме", callback_data="ref_arbitrary")]
+            [InlineKeyboardButton(text="📄 В произвольной форме", callback_data="ref_arbitrary")],
+            [InlineKeyboardButton(text="🔙 Назад в меню документов", callback_data="back_to_doc_menu")]
         ])
         await message.answer("Выберите, какая характеристика нужна:", reply_markup=keyboard)
         await state.set_state(ReferenceDoc.ref_type)
@@ -233,6 +236,12 @@ async def process_fullname(message: Message, state: FSMContext):
     elif doc_type == "other":
         await message.answer("Какой документ Вам необходимо получить? (укажите):")
         await state.set_state(OtherDoc.doc_name)
+
+@router.callback_query(F.data == "back_to_doc_menu")
+async def back_to_doc_menu_callback(callback: CallbackQuery, state: FSMContext):
+    """Вернуться назад"""
+    await state.clear()
+    await show_doc_menu(callback)
 
 
 # ========== ОБРАБОТЧИКИ ДЛЯ СПРАВКИ О ЗАРПЛАТЕ (salary) ==========
@@ -256,7 +265,8 @@ async def salary_purpose(callback: CallbackQuery, state: FSMContext):
         [InlineKeyboardButton(text="3 месяца", callback_data="period_3")],
         [InlineKeyboardButton(text="6 месяцев", callback_data="period_6")],
         [InlineKeyboardButton(text="12 месяцев", callback_data="period_12")],
-        [InlineKeyboardButton(text="Иной период", callback_data="period_other")]
+        [InlineKeyboardButton(text="Иной период", callback_data="period_other")],
+        [InlineKeyboardButton(text="🔙 Назад в меню документов", callback_data="back_to_doc_menu")]
     ])
     await callback.message.edit_text("Выберите период, за который нужна справка:", reply_markup=keyboard)
     await state.set_state(SalaryDoc.period)
@@ -318,8 +328,8 @@ async def period_organization(message: Message, state: FSMContext):
 
 @router.callback_query(CopyDoc.copy_type)
 async def copy_type(callback: CallbackQuery, state: FSMContext):
-    copy_type = "simple" if callback.data == "copy_simple" else "certified"
-    await state.update_data(copy_type=copy_type)
+    copy_type_ = "simple" if callback.data == "copy_simple" else "certified"
+    await state.update_data(copy_type=copy_type_)
     await callback.message.edit_text("Введите наименование организации, в которую необходимо предоставить копию:")
     await state.set_state(CopyDoc.organization)
     await callback.answer()
@@ -377,7 +387,8 @@ async def child_birth(message: Message, state: FSMContext):
     await state.update_data(child_birth=birth)
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="🏕 Оздоровительный лагерь", callback_data="cert_camp")],
-        [InlineKeyboardButton(text="🏥 Санаторное лечение", callback_data="cert_sanatorium")]
+        [InlineKeyboardButton(text="🏥 Санаторное лечение", callback_data="cert_sanatorium")],
+        [InlineKeyboardButton(text="🔙 Назад в меню документов", callback_data="back_to_doc_menu")]
     ])
     await message.answer("Выберите, какая справка нужна:", reply_markup=keyboard)
     await state.set_state(ChildDoc.certificate_type)
@@ -427,7 +438,7 @@ async def reference_organization(message: Message, state: FSMContext):
 async def petition_topic(message: Message, state: FSMContext):
     topic = message.text.strip()
     await state.update_data(petition_topic=topic)
-    await message.answer("Введите наименование организации, в которую необходимо предоставить ходатайство:")
+    await message.answer("Укажите полное наименование организации, в которую необходимо предоставить ходатайство:")
     await state.set_state(PetitionDoc.organization)
 
 @router.message(PetitionDoc.organization)
@@ -476,39 +487,63 @@ async def attach_no(callback: CallbackQuery, state: FSMContext, db: Database):
     await callback.answer()
 
 
+import os
+from config import UPLOADS_DIR
+
 @router.message(F.document | F.photo | F.text)
 async def attach_file(message: Message, state: FSMContext, db: Database):
     current_state = await state.get_state()
-    logger.info(f"attach_file called with state: {current_state}")  # для отладки
+    logger.info(f"attach_file called with state: {current_state}")
 
     if not current_state:
         await message.answer("Пожалуйста, начните с команды /start и выберите документ.")
         return
 
-    # Проверяем, что состояние заканчивается именно на ":form"
     if not current_state.endswith(":form"):
         await message.answer("Сейчас не требуется прикреплять файл. Пожалуйста, следуйте инструкциям.")
         return
 
     try:
+        attachment_data = {}
+
         if message.document:
-            file_id = message.document.file_id
-            file_name = message.document.file_name
+            file = await message.bot.get_file(message.document.file_id)
+            file_path = os.path.join(UPLOADS_DIR, f"doc_{message.from_user.id}_{message.document.file_name}")
+            await message.bot.download_file(file.file_path, file_path)
+            attachment_data['file_path'] = file_path
+            attachment_data['file_name'] = message.document.file_name
+            attachment_data['type'] = 'document'
+
         elif message.photo:
-            file_id = message.photo[-1].file_id
-            file_name = "photo"
-        elif message.text and message.text.startswith("http"):
-            file_id = message.text
-            file_name = "link"
+            photo = message.photo[-1]
+            file = await message.bot.get_file(photo.file_id)
+            file_path = os.path.join(UPLOADS_DIR, f"photo_{message.from_user.id}_{photo.file_unique_id}.jpg")
+            await message.bot.download_file(file.file_path, file_path)
+            attachment_data['file_path'] = file_path
+            attachment_data['file_name'] = f"photo_{photo.width}x{photo.height}.jpg"
+            attachment_data['type'] = 'photo'
+        elif message.text:
+            text = message.text.strip()
+            if text.startswith(('http://', 'https://', 't.me/', 'www.')):
+                attachment_data['file_path'] = text
+                attachment_data['file_name'] = 'link'
+                attachment_data['type'] = 'link'
+            else:
+                await message.answer("Пожалуйста, отправьте ссылку (начинающуюся с http://, https:// или t.me/) или файл.")
+                return
         else:
             await message.answer("Пожалуйста, прикрепите файл (изображение, документ) или ссылку.")
             return
 
-        await state.update_data(attachment=file_id, attachment_name=file_name)
+        await state.update_data(
+            file_path=attachment_data.get('file_path'),
+            attachment_name=attachment_data.get('file_name'),
+            attachment_type=attachment_data.get('type')
+        )
         await message.answer("✅ Файл получен. Заявка принята в обработку.")
         await finalize_request(message, state, db)
     except Exception as e:
-        logger.error(f"Error in attach_file: {e}")
+        logger.error(f"Error in attach_file: {e}", exc_info=True)
         await message.answer("❌ Произошла ошибка при обработке файла. Попробуйте позже.")
 
 
@@ -517,6 +552,10 @@ async def attach_file(message: Message, state: FSMContext, db: Database):
 async def finalize_request(message: Message, state: FSMContext, db: Database):
     data = await state.get_data()
     user_id = message.from_user.id
+    logger.info(f"Данные из state: {data}")
+
+    logger.info(
+        f"Сохраняем: file_path={data.get('file_path')}, attachment_name={data.get('attachment_name')}, type={data.get('attachment_type')}")
 
     await db.save_document_request(
         user_id=user_id,
@@ -525,7 +564,7 @@ async def finalize_request(message: Message, state: FSMContext, db: Database):
         purpose=data.get("purpose"),
         period=data.get("period"),
         organization=data.get("organization"),
-        attachment=data.get("attachment"),
+        file_path=data.get("file_path"),
         attachment_name=data.get("attachment_name"),
         attachment_type=data.get("attachment_type"),
         child_fullname=data.get("child_fullname"),

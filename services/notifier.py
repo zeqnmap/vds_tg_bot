@@ -1,15 +1,61 @@
 import asyncio
 import logging
+import os
 from aiogram import Bot
+from aiogram.types import FSInputFile
 from database.db import Database
 
 logger = logging.getLogger(__name__)
 
+# Словари для человекочитаемых названий
+DOC_TYPE_NAMES = {
+    "salary": "Справка о заработной плате",
+    "period": "Справка о периоде работы",
+    "copy": "Копия трудовой книжки",
+    "vacation": "Справка об отпуске",
+    "child": "Справка о необеспеченности ребенка путевкой",
+    "reference": "Характеристика",
+    "petition": "Ходатайство",
+    "other": "Другой документ"
+}
+
+PURPOSE_NAMES = {
+    "house": "🏠 Кредит на жильё",
+    "car": "🚗 Кредит на машину",
+    "improve": "🏡 Улучшение жилищных условий",
+    "tax": "📄 Налоговая",
+    "consumer": "🛒 Потребительский кредит",
+    "installment": "📦 Рассрочка на товары",
+    "other": "✏️ Другое"
+}
+
+PERIOD_NAMES = {
+    "3": "3 месяца",
+    "6": "6 месяцев",
+    "12": "12 месяцев"
+}
+
+COPY_TYPE_NAMES = {
+    "simple": "📄 Ксерокопия",
+    "certified": "📜 Заверенная подписью и печатью"
+}
+
+VACATION_TYPE_NAMES = {
+    "regular": "🏖 Трудовой или социальный отпуск",
+    "childcare": "👶 Отпуск по уходу за ребенком"
+}
+
+REF_TYPE_NAMES = {
+    "production": "🏭 Производственная характеристика",
+    "arbitrary": "📄 В произвольной форме"
+}
+
+CERTIFICATE_TYPE_NAMES = {
+    "camp": "🏕 В оздоровительный лагерь",
+    "sanatorium": "🏥 Для санаторного лечения"
+}
+
 async def monitor_new_requests(bot: Bot, db: Database, chat_id: str, interval: int = 10):
-    """
-    Фоновая задача: каждые interval секунд проверяет новые заявки в БД
-    и отправляет уведомление в указанный чат.
-    """
     if not chat_id:
         logger.warning("NOTIFICATION_CHAT_ID не задан, уведомления отключены")
         return
@@ -24,68 +70,103 @@ async def monitor_new_requests(bot: Bot, db: Database, chat_id: str, interval: i
             if new_requests:
                 logger.info(f"Найдено {len(new_requests)} новых заявок")
                 for req in new_requests:
-                    await send_notification(bot, chat_id, req)
-                    # Обновляем last_id после каждой успешной отправки
-                    await db.update_last_processed_notification_id(req['id'])
+                    try:
+                        await send_notification(bot, chat_id, req)
+                    except Exception as e:
+                        logger.error(f"Ошибка при отправке уведомления для заявки #{req['id']}: {e}", exc_info=True)
+                    finally:
+                        await db.update_last_processed_notification_id(req['id'])
             else:
                 logger.debug("Новых заявок нет")
 
         except Exception as e:
-            logger.error(f"Ошибка в мониторинге заявок: {e}", exc_info=True)
+            logger.error(f"Критическая ошибка в мониторинге: {e}", exc_info=True)
 
         await asyncio.sleep(interval)
 
-
 async def send_notification(bot: Bot, chat_id: str, request: dict):
-    """Формирует и отправляет сообщение о новой заявке"""
-    doc_type_names = {
-        "salary": "Справка о заработной плате",
-        "period": "Справка о периоде работы",
-        "copy": "Копия трудовой книжки",
-        "vacation": "Справка об отпуске",
-        "child": "Справка о необеспеченности ребенка путевкой",
-        "reference": "Характеристика",
-        "petition": "Ходатайство",
-        "other": "Другой документ"
-    }
+    """Отправляет уведомление: сначала текст, затем медиа (если есть локальный файл или ссылка)."""
+    doc_name = DOC_TYPE_NAMES.get(request.get('doc_type'), request.get('doc_type'))
 
-    doc_name = doc_type_names.get(request.get('doc_type'), request.get('doc_type'))
-
-    text = f"🆕 **Новая заявка на документ**\n\n"
-    text += f"**Тип:** {doc_name}\n"
-    text += f"**От:** {request.get('fullname')} (ID: {request.get('user_id')})\n"
-    text += f"**Организация:** {request.get('organization', 'не указана')}\n"
+    lines = []
+    lines.append("🆕 НОВАЯ ЗАЯВКА НА ДОКУМЕНТ")
+    lines.append("")
+    lines.append(f"Тип: {doc_name}")
+    lines.append(f"От: {request.get('fullname')} (ID: {request.get('user_id')})")
+    lines.append(f"Организация: {request.get('organization', 'не указана')}")
 
     if request.get('purpose'):
-        text += f"**Цель:** {request['purpose']}\n"
-    if request.get('period'):
-        text += f"**Период:** {request['period']}\n"
-    if request.get('child_fullname'):
-        text += f"**Ребёнок:** {request['child_fullname']} ({request.get('child_birth', '')})\n"
-    if request.get('copy_type'):
-        text += f"**Тип копии:** {'заверенная' if request['copy_type']=='certified' else 'ксерокопия'}\n"
-    if request.get('vacation_type'):
-        text += f"**Тип отпуска:** {'по уходу за ребёнком' if request['vacation_type']=='childcare' else 'обычный'}\n"
-    if request.get('ref_type'):
-        text += f"**Тип характеристики:** {'производственная' if request['ref_type']=='production' else 'произвольная'}\n"
-    if request.get('petition_topic'):
-        text += f"**Тема ходатайства:** {request['petition_topic']}\n"
-    if request.get('doc_name'):
-        text += f"**Документ:** {request['doc_name']}\n"
+        purpose_code = request['purpose']
+        purpose_text = PURPOSE_NAMES.get(purpose_code, purpose_code)
+        lines.append(f"Цель: {purpose_text}")
 
-    if request.get('attachment'):
-        attach_type = request.get('attachment_type', 'file')
-        if attach_type == 'photo':
-            text += f"\n📷 **Прикреплено фото**"
-        elif attach_type == 'document':
-            text += f"\n📎 **Прикреплён документ:** {request['attachment_name']}"
-        elif attach_type == 'link':
-            text += f"\n🔗 **Ссылка:** {request['attachment']}"
+    if request.get('period'):
+        period_code = request['period']
+        if period_code == "other":
+            lines.append("Период: иной (указан при оформлении)")
         else:
-            text += f"\n📎 **Прикреплён файл:** {request['attachment_name']}"
+            period_text = PERIOD_NAMES.get(period_code, f"{period_code} месяцев")
+            lines.append(f"Период: {period_text}")
+
+    if request.get('child_fullname'):
+        child_line = f"Ребёнок: {request['child_fullname']}"
+        if request.get('child_birth'):
+            child_line += f" ({request['child_birth']})"
+        lines.append(child_line)
+
+    if request.get('copy_type'):
+        copy_text = COPY_TYPE_NAMES.get(request['copy_type'], request['copy_type'])
+        lines.append(f"Тип копии: {copy_text}")
+
+    if request.get('vacation_type'):
+        vac_text = VACATION_TYPE_NAMES.get(request['vacation_type'], request['vacation_type'])
+        lines.append(f"Тип отпуска: {vac_text}")
+
+    if request.get('ref_type'):
+        ref_text = REF_TYPE_NAMES.get(request['ref_type'], request['ref_type'])
+        lines.append(f"Тип характеристики: {ref_text}")
+
+    if request.get('certificate_type'):
+        cert_text = CERTIFICATE_TYPE_NAMES.get(request['certificate_type'], request['certificate_type'])
+        lines.append(f"Тип справки: {cert_text}")
+
+    if request.get('petition_topic'):
+        lines.append(f"Тема ходатайства: {request['petition_topic']}")
+
+    if request.get('doc_name'):
+        lines.append(f"Документ: {request['doc_name']}")
+
+    text = "\n".join(lines)
+
+    # Отправляем текст
+    await bot.send_message(chat_id, text)
+
+    # Обрабатываем вложение
+    attachment_type = request.get('attachment_type')
+    attachment_path = request.get('file_path')  # теперь это путь к файлу или ссылка
+    attachment_name = request.get('attachment_name', 'файл')
+
+    if not attachment_path:
+        return
 
     try:
-        await bot.send_message(chat_id, text, parse_mode="Markdown")
-        logger.info(f"Уведомление о заявке #{request['id']} отправлено")
+        if attachment_type == 'photo':
+            if os.path.exists(attachment_path):
+                await bot.send_photo(chat_id, photo=FSInputFile(attachment_path))
+                logger.info(f"Фото отправлено из файла {attachment_path}")
+            else:
+                await bot.send_message(chat_id, f"⚠️ Файл фото не найден на сервере: {attachment_path}")
+        elif attachment_type == 'document':
+            if os.path.exists(attachment_path):
+                await bot.send_document(chat_id, document=FSInputFile(attachment_path))
+                logger.info(f"Документ отправлен из файла {attachment_path}")
+            else:
+                await bot.send_message(chat_id, f"⚠️ Файл документа не найден на сервере: {attachment_path}")
+        elif attachment_type == 'link':
+            await bot.send_message(chat_id, f"🔗 Ссылка: {attachment_path}")
+        else:
+            # Неизвестный тип – просто выводим путь
+            await bot.send_message(chat_id, f"📎 Прикреплён файл: {attachment_name} (путь: {attachment_path})")
     except Exception as e:
-        logger.error(f"Не удалось отправить уведомление в чат {chat_id}: {e}")
+        logger.error(f"Ошибка отправки медиа: {e}")
+        await bot.send_message(chat_id, f"⚠️ Ошибка при отправке вложения. Путь: {attachment_path}")
