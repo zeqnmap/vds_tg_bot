@@ -12,7 +12,7 @@ router = Router()
 @router.callback_query(F.data == "social")
 async def social_menu_callback(callback: CallbackQuery):
     """Показывает подменю Социализация"""
-    text = "Социализация\n\nВыберите интересующий раздел:"
+    text = "👷Социализация\n\nВыберите интересующий раздел:"
     await callback.message.edit_text(
         text,
         reply_markup=get_social_submenu_keyboard()
@@ -24,7 +24,7 @@ async def social_menu_callback(callback: CallbackQuery):
 async def social_about_callback(callback: CallbackQuery):
     """Текст 'О нас'"""
     about_text = (
-        "ЗДРАВПУНКТ\n\n"
+        "🏥 ЗДРАВПУНКТ\n\n"
         "• Расписание:\n"
         "ПН - ПТ -- 07:00 до 18:00\n"
         "СБ -- 09:00 до 15:00\n"
@@ -48,7 +48,7 @@ async def social_about_callback(callback: CallbackQuery):
 async def social_contacts_callback(callback: CallbackQuery):
     """Текст 'Контакты'"""
     contacts_text = (
-        "📞 В Компании также организованы:\n\n"
+        "🙏 В Компании также организованы:\n\n"
         "   • УСЛУГИ МАССАЖА один раз в неделю с возмещением 60% стоимости Компанией\n\n"
         "   • УСЛУГИ ПАРИКМАХЕРА один раз в неделю при самостоятельной оплате\n"
 
@@ -68,7 +68,7 @@ async def social_contacts_callback(callback: CallbackQuery):
 async def social_contacts_callback(callback: CallbackQuery):
     """Текст 'Экология'"""
     contacts_text = (
-        "ESG - экология, социальной ответственности:\n\n"
+        "🌳ESG - экология, социальной ответственности:\n\n"
         "Важной частью нашей корпоративной философии являются проекты в области ESG — экологии, социальной ответственности и корпоративного управления.\n\n"
         "Мы стремимся быть не только успешной Компанией, но и ответственным участником общества.\n\n"
         "   • Реализована программа эффективного использования природных ресурсов, комплексного управления отходами и переработки.\n\n"

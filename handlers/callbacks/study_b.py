@@ -11,7 +11,7 @@ router = Router()
 @router.callback_query(F.data == "study")
 async def social_menu_callback(callback: CallbackQuery):
     """Показывает подменю Обучения"""
-    text = "Обучение\n\nВыберите интересующий раздел:"
+    text = "📚Обучение\n\nВыберите интересующий раздел:"
     await callback.message.edit_text(
         text,
         reply_markup=get_study_submenu_keyboard()
@@ -23,7 +23,7 @@ async def social_menu_callback(callback: CallbackQuery):
 async def social_contacts_callback(callback: CallbackQuery):
     """Текст 'Платформа'"""
     contacts_text = (
-        "📞 В Компании есть платформа дистанционного обучения:\n\n"
+        "💻 В Компании есть платформа дистанционного обучения:\n\n"
         "   • Логин и пароль от вашего личного кабинета на платформу вам выдаст HR специалист.\n\n"
         "   • В первый день назначаются курсы, которые понадобятся вам в процессе работы.\n\n"
         "   • ВАЖНО пройти их в течение первого месяца работы!!!\n\n"
@@ -48,7 +48,7 @@ async def social_contacts_callback(callback: CallbackQuery):
 async def social_contacts_callback(callback: CallbackQuery):
     """Текст 'Церковь'"""
     contacts_text = (
-        "📞 ДУХОВНЫЙ ИНТЕЛЛЕКТ:\n\n"
+        "⛪️ ДУХОВНЫЙ ИНТЕЛЛЕКТ:\n\n"
         "На территории Завода есть Часовня Святителя Спиридона Тримифунтского.\n"
         "Здесь у каждого из нас есть возможность получить духовную поддержку, найти умиротворение и вдохновение.\n\n"
         "Каждый ЧЕТВЕРГ в 07:00 проходит Литургия.\n"

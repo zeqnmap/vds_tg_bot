@@ -11,7 +11,7 @@ router = Router()
 @router.callback_query(F.data == "transport")
 async def social_menu_callback(callback: CallbackQuery):
     """Показывает подменю Транспорт"""
-    text = "Обучение\n\nВыберите интересующий раздел:"
+    text = "🚎 Транспорт\n\nВыберите интересующий раздел:"
     await callback.message.edit_text(
         text,
         reply_markup=get_transport_submenu_keyboard()
@@ -23,7 +23,7 @@ async def social_menu_callback(callback: CallbackQuery):
 async def social_contacts_callback(callback: CallbackQuery):
     """Текст 'Расписание'"""
     contacts_text = (
-        "📞 РАСПИСАНИЕ АВТОБУСОВ:\n\n"
+        "📅 РАСПИСАНИЕ АВТОБУСОВ:\n\n"
     )
 
     back_keyboard = InlineKeyboardMarkup(inline_keyboard=[
@@ -40,7 +40,7 @@ async def social_contacts_callback(callback: CallbackQuery):
 async def social_contacts_callback(callback: CallbackQuery):
     """Текст 'Парковка'"""
     contacts_text = (
-        "📞 ПАРКОВКА:\n\n"
+        "🚗 ПАРКОВКА:\n\n"
         "Парковаться можно вдоль дороги или на горизонтальной парковке перед входом в офис рядом с проходной.\n\n"
         "   • В случае если вы перекрыли выезд другому припаркованному автомобилю, обязательно оставьте под стеклом свой контактный номер телефона.\n\n"
         "   • Места на парковке под шлагбаумом и на вертикальной парковке у входа в офиса закреплены за действующими сотрудниками и по мере возможности будут перераспределятся."
