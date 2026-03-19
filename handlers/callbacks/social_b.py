@@ -1,22 +1,20 @@
-from aiogram import Router, F
-from aiogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
-from keyboards.inline import (
-get_social_submenu_keyboard
-)
+from aiogram import F, Router
+from aiogram.types import (CallbackQuery, InlineKeyboardButton,
+                           InlineKeyboardMarkup)
+
+from keyboards.inline import get_social_submenu_keyboard
 from utils.logger_conf import setup_logger
 
 logger = setup_logger(__name__)
 
 router = Router()
 
+
 @router.callback_query(F.data == "social")
 async def social_menu_callback(callback: CallbackQuery):
     """Показывает подменю Социализация"""
     text = "👷Социализация\n\nВыберите интересующий раздел:"
-    await callback.message.edit_text(
-        text,
-        reply_markup=get_social_submenu_keyboard()
-    )
+    await callback.message.edit_text(text, reply_markup=get_social_submenu_keyboard())
     await callback.answer()
 
 
@@ -34,13 +32,16 @@ async def social_about_callback(callback: CallbackQuery):
         "• Оформление листов о временной нетрудоспособности.\n"
         "• Физиотерапевтические процедуры."
     )
-    back_keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="← Назад в Социализацию", callback_data="back_to_social")]
-    ])
-    await callback.message.edit_text(
-        about_text,
-        reply_markup=back_keyboard
+    back_keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="← Назад в Социализацию", callback_data="back_to_social"
+                )
+            ]
+        ]
     )
+    await callback.message.edit_text(about_text, reply_markup=back_keyboard)
     await callback.answer()
 
 
@@ -51,15 +52,18 @@ async def social_contacts_callback(callback: CallbackQuery):
         "🙏 В Компании также организованы:\n\n"
         "   • УСЛУГИ МАССАЖА один раз в неделю с возмещением 60% стоимости Компанией\n\n"
         "   • УСЛУГИ ПАРИКМАХЕРА один раз в неделю при самостоятельной оплате\n"
-
     )
-    back_keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="← Назад в Социализацию", callback_data="back_to_social")]
-    ])
+    back_keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="← Назад в Социализацию", callback_data="back_to_social"
+                )
+            ]
+        ]
+    )
     await callback.message.edit_text(
-        contacts_text,
-        reply_markup=back_keyboard,
-        parse_mode="Markdown"
+        contacts_text, reply_markup=back_keyboard, parse_mode="Markdown"
     )
     await callback.answer()
 
@@ -74,15 +78,18 @@ async def social_contacts_callback(callback: CallbackQuery):
         "   • Реализована программа эффективного использования природных ресурсов, комплексного управления отходами и переработки.\n\n"
         "   • Компания VDS более 10 лет участвует в сохранении памятников древнерусской живописи и открытии фресок.\n\n"
         "   • Компания VDS разработала и освоила производство высокопроизводительных ульев и современного аналога колоды, и привлекла 8 профессиональных пчеловодов для развития проекта на 12 пасеках в живописнейших уголках Белой Руси. Проект также направлен на возрождение древнего промысла бортничества, включенного в список нематериального культурного наследия ЮНЕСКО."
-
     )
-    back_keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="← Назад в Социализацию", callback_data="back_to_social")]
-    ])
+    back_keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="← Назад в Социализацию", callback_data="back_to_social"
+                )
+            ]
+        ]
+    )
     await callback.message.edit_text(
-        contacts_text,
-        reply_markup=back_keyboard,
-        parse_mode="Markdown"
+        contacts_text, reply_markup=back_keyboard, parse_mode="Markdown"
     )
     await callback.answer()
 
@@ -91,4 +98,3 @@ async def social_contacts_callback(callback: CallbackQuery):
 async def back_to_social_callback(callback: CallbackQuery):
     """Возврат в меню Социализация"""
     await social_menu_callback(callback)
-

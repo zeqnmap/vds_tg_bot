@@ -1,5 +1,7 @@
-from aiogram import Router, F
-from aiogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram import F, Router
+from aiogram.types import (CallbackQuery, InlineKeyboardButton,
+                           InlineKeyboardMarkup)
+
 from keyboards.inline import get_study_submenu_keyboard
 from utils.logger_conf import setup_logger
 
@@ -12,10 +14,7 @@ router = Router()
 async def social_menu_callback(callback: CallbackQuery):
     """Показывает подменю Обучения"""
     text = "📚Обучение\n\nВыберите интересующий раздел:"
-    await callback.message.edit_text(
-        text,
-        reply_markup=get_study_submenu_keyboard()
-    )
+    await callback.message.edit_text(text, reply_markup=get_study_submenu_keyboard())
     await callback.answer()
 
 
@@ -34,13 +33,16 @@ async def social_contacts_callback(callback: CallbackQuery):
         "Для Android: https://play.google.com/store/apps/details?id=com.ispring.islearn"
     )
 
-    back_keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="← Назад в Обучение", callback_data="back_to_study")]
-    ])
-    await callback.message.edit_text(
-        contacts_text,
-        reply_markup=back_keyboard
+    back_keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="← Назад в Обучение", callback_data="back_to_study"
+                )
+            ]
+        ]
     )
+    await callback.message.edit_text(contacts_text, reply_markup=back_keyboard)
     await callback.answer()
 
 
@@ -55,13 +57,16 @@ async def social_contacts_callback(callback: CallbackQuery):
         "Приглашаем!!!"
     )
 
-    back_keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="← Назад в Обучение", callback_data="back_to_study")]
-    ])
-    await callback.message.edit_text(
-        contacts_text,
-        reply_markup=back_keyboard
+    back_keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="← Назад в Обучение", callback_data="back_to_study"
+                )
+            ]
+        ]
     )
+    await callback.message.edit_text(contacts_text, reply_markup=back_keyboard)
     await callback.answer()
 
 

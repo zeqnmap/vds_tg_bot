@@ -1,6 +1,7 @@
 from aiogram import Router
 from aiogram.filters import CommandStart
 from aiogram.types import Message
+
 from database.db import Database
 from keyboards.inline import get_main_menu_keyboard
 from utils.logger_conf import setup_logger
@@ -8,6 +9,7 @@ from utils.logger_conf import setup_logger
 logger = setup_logger(__name__)
 
 router = Router()
+
 
 @router.message(CommandStart())
 async def cmd_start(message: Message, db: Database):
@@ -24,8 +26,6 @@ async def cmd_start(message: Message, db: Database):
     )
 
     await message.answer(
-        welcome_text,
-        reply_markup=get_main_menu_keyboard(),
-        parse_mode="Markdown"
+        welcome_text, reply_markup=get_main_menu_keyboard(), parse_mode="Markdown"
     )
     logger.info(f"User {user_id} started the bot")

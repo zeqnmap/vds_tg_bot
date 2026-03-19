@@ -1,10 +1,12 @@
 import asyncio
+
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 
-from config import BOT_TOKEN, DATABASE_PATH, NOTIFICATION_CHAT_ID, NOTIFICATION_INTERVAL
+from config import (BOT_TOKEN, DATABASE_PATH, NOTIFICATION_CHAT_ID,
+                    NOTIFICATION_INTERVAL)
 from database.db import Database
-from handlers import start_router, main_callback_router
+from handlers import main_callback_router, start_router
 from services.notifier import monitor_new_requests
 from utils.logger_conf import setup_logger
 
@@ -31,7 +33,9 @@ async def main():
         )
         logger.info(f"Запущен мониторинг новых заявок для чата {NOTIFICATION_CHAT_ID}")
     else:
-        logger.info("Уведомления о новых заявках отключены (не задан NOTIFICATION_CHAT_ID)")
+        logger.info(
+            "Уведомления о новых заявках отключены (не задан NOTIFICATION_CHAT_ID)"
+        )
 
     try:
         await dp.start_polling(bot, db=db)

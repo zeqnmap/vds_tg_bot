@@ -1,5 +1,7 @@
-from aiogram import Router, F
-from aiogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram import F, Router
+from aiogram.types import (CallbackQuery, InlineKeyboardButton,
+                           InlineKeyboardMarkup)
+
 from keyboards.inline import get_usual_submenu_keyboard
 from utils.logger_conf import setup_logger
 
@@ -12,10 +14,7 @@ router = Router()
 async def social_menu_callback(callback: CallbackQuery):
     """Показывает подменю Обычные вопросы"""
     text = "❓Вопросы\n\nВыберите интересующий раздел:"
-    await callback.message.edit_text(
-        text,
-        reply_markup=get_usual_submenu_keyboard()
-    )
+    await callback.message.edit_text(text, reply_markup=get_usual_submenu_keyboard())
     await callback.answer()
 
 
@@ -29,13 +28,16 @@ async def social_contacts_callback(callback: CallbackQuery):
         "   • Обратите внимание, что в гардеробе отсутствуют полотенце-сушители, предусмотрите для себя каждый день чистое свежее полотенце."
     )
 
-    back_keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="← Назад в Вопросы", callback_data="back_to_usual")]
-    ])
-    await callback.message.edit_text(
-        contacts_text,
-        reply_markup=back_keyboard
+    back_keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="← Назад в Вопросы", callback_data="back_to_usual"
+                )
+            ]
+        ]
     )
+    await callback.message.edit_text(contacts_text, reply_markup=back_keyboard)
     await callback.answer()
 
 
@@ -48,13 +50,16 @@ async def social_contacts_callback(callback: CallbackQuery):
         "   • Сумма комплексного обеда — 6,50 руб. Компот, горячий чай и хлеб всегда в доступе без ограничений."
     )
 
-    back_keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="← Назад в Вопросы", callback_data="back_to_usual")]
-    ])
-    await callback.message.edit_text(
-        contacts_text,
-        reply_markup=back_keyboard
+    back_keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="← Назад в Вопросы", callback_data="back_to_usual"
+                )
+            ]
+        ]
     )
+    await callback.message.edit_text(contacts_text, reply_markup=back_keyboard)
     await callback.answer()
 
 
@@ -67,13 +72,16 @@ async def social_contacts_callback(callback: CallbackQuery):
         "АВАНС 10 числа --- ЗП 25 числа\n\n"
     )
 
-    back_keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="← Назад в Вопросы", callback_data="back_to_usual")]
-    ])
-    await callback.message.edit_text(
-        contacts_text,
-        reply_markup=back_keyboard
+    back_keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="← Назад в Вопросы", callback_data="back_to_usual"
+                )
+            ]
+        ]
     )
+    await callback.message.edit_text(contacts_text, reply_markup=back_keyboard)
     await callback.answer()
 
 
