@@ -1,6 +1,7 @@
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
+
 def get_main_menu_keyboard() -> InlineKeyboardMarkup:
     """Главное меню с 5 inline-кнопками (2-2-1)"""
     builder = InlineKeyboardBuilder()
@@ -47,7 +48,8 @@ def get_study_submenu_keyboard() -> InlineKeyboardMarkup:
 def get_transport_submenu_keyboard() -> InlineKeyboardMarkup:
     """Подменю для раздела Транспорт"""
     builder = InlineKeyboardBuilder()
-    builder.button(text="📅 РАСПИСАНИЕ", callback_data="schedule")
+    builder.button(text="📅 АВТОБУС", callback_data="schedule_1")
+    builder.button(text="📅 МАРШРУТКА", callback_data="schedule_2")
     builder.button(text="🚗 ПАРКОВКА", callback_data="parking")
     builder.button(text="🔙 Назад", callback_data="back_to_main")
     builder.adjust(2, 1)
@@ -69,6 +71,7 @@ def get_usual_submenu_keyboard() -> InlineKeyboardMarkup:
 
 
 # ==================== DOCS ====================
+
 
 def get_doc_menu_keyboard() -> InlineKeyboardMarkup:
     """Меню выбора документа (8 пунктов)"""
