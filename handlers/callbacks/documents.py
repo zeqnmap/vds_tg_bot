@@ -198,7 +198,7 @@ async def start_other(callback: CallbackQuery, state: FSMContext):
 
 
 # ========== ОБЩИЙ ОБРАБОТЧИК ВВОДА ФИО ==========
-# после получения ФИО переводим на ввод телефона
+# после получения ФИО перевод на ввод телефона
 
 
 @router.message(SalaryDoc.fullname)
@@ -245,7 +245,7 @@ async def process_fullname(message: Message, state: FSMContext):
 
 
 # ========== ОБРАБОТЧИК ВВОДА ТЕЛЕФОНА ==========
-# Проверка, что номер содержит 12 цифр, затем переходим к следующему шагу
+# проверка, что номер содержит 12 цифр, затем переход к следующему шагу
 
 
 @router.message(SalaryDoc.phone)
@@ -839,7 +839,7 @@ async def finalize_request(message: Message, state: FSMContext, db: Database):
         user_id=user_id,
         doc_type=data.get("doc_type"),
         fullname=data.get("fullname"),
-        phone=data.get("phone"),  # ← добавлено поле телефона
+        phone=data.get("phone"),
         purpose=data.get("purpose"),
         period=data.get("period"),
         organization=data.get("organization"),

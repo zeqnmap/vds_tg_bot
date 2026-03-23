@@ -18,7 +18,7 @@ DOC_TYPE_NAMES = {
     "reference": "Характеристика",
     "petition": "Ходатайство",
     "other": "Другой документ",
-    "unusual": "Особый вопрос"
+    "unusual": "Особый вопрос",
 }
 
 PURPOSE_NAMES = {
@@ -93,15 +93,17 @@ async def monitor_new_requests(
 
 async def send_notification(bot: Bot, chat_id: str, request: dict):
     """Отправляет уведомление: сначала текст, затем медиа (если есть локальный файл или ссылка)."""
-    doc_name = DOC_TYPE_NAMES.get(request.get('doc_type'), request.get('doc_type'))
-    is_unusual = request.get('doc_type') == 'unusual'
+    doc_name = DOC_TYPE_NAMES.get(request.get("doc_type"), request.get("doc_type"))
+    is_unusual = request.get("doc_type") == "unusual"
 
     lines = []
-    lines.append("🆕 НОВАЯ ЗАЯВКА НА ДОКУМЕНТ" if not is_unusual else "❓ ОСОБЫЙ ВОПРОС")
+    lines.append(
+        "🆕 НОВАЯ ЗАЯВКА НА ДОКУМЕНТ" if not is_unusual else "❓ ОСОБЫЙ ВОПРОС"
+    )
     lines.append("")
     lines.append(f"Тип: {doc_name}")
 
-    if request.get('phone'):
+    if request.get("phone"):
         lines.append(f"Номер: {request['phone']}")
 
     lines.append(f"От: {request.get('fullname')} (ID: {request.get('user_id')})")
@@ -109,76 +111,86 @@ async def send_notification(bot: Bot, chat_id: str, request: dict):
     if not is_unusual:
         lines.append(f"Организация: {request.get('organization', 'не указана')}")
 
-    if is_unusual and request.get('purpose'):
+    if is_unusual and request.get("purpose"):
         lines.append(f"Вопрос: {request['purpose']}")
 
     if not is_unusual:
-        if request.get('purpose'):
-            purpose_code = request['purpose']
+        if request.get("purpose"):
+            purpose_code = request["purpose"]
             purpose_text = PURPOSE_NAMES.get(purpose_code, purpose_code)
             lines.append(f"Цель: {purpose_text}")
 
-        if request.get('period'):
-            period_code = request['period']
+        if request.get("period"):
+            period_code = request["period"]
             if period_code == "other":
                 lines.append("Период: иной (указан при оформлении)")
             else:
                 period_text = PERIOD_NAMES.get(period_code, f"{period_code} месяцев")
                 lines.append(f"Период: {period_text}")
 
-        if request.get('child_fullname'):
+        if request.get("child_fullname"):
             child_line = f"Ребёнок: {request['child_fullname']}"
-            if request.get('child_birth'):
+            if request.get("child_birth"):
                 child_line += f" ({request['child_birth']})"
             lines.append(child_line)
 
-        if request.get('copy_type'):
-            copy_text = COPY_TYPE_NAMES.get(request['copy_type'], request['copy_type'])
+        if request.get("copy_type"):
+            copy_text = COPY_TYPE_NAMES.get(request["copy_type"], request["copy_type"])
             lines.append(f"Тип копии: {copy_text}")
 
-        if request.get('vacation_type'):
-            vac_text = VACATION_TYPE_NAMES.get(request['vacation_type'], request['vacation_type'])
+        if request.get("vacation_type"):
+            vac_text = VACATION_TYPE_NAMES.get(
+                request["vacation_type"], request["vacation_type"]
+            )
             lines.append(f"Тип отпуска: {vac_text}")
 
-        if request.get('ref_type'):
-            ref_text = REF_TYPE_NAMES.get(request['ref_type'], request['ref_type'])
+        if request.get("ref_type"):
+            ref_text = REF_TYPE_NAMES.get(request["ref_type"], request["ref_type"])
             lines.append(f"Тип характеристики: {ref_text}")
 
-        if request.get('certificate_type'):
-            cert_text = CERTIFICATE_TYPE_NAMES.get(request['certificate_type'], request['certificate_type'])
+        if request.get("certificate_type"):
+            cert_text = CERTIFICATE_TYPE_NAMES.get(
+                request["certificate_type"], request["certificate_type"]
+            )
             lines.append(f"Тип справки: {cert_text}")
 
-        if request.get('petition_topic'):
+        if request.get("petition_topic"):
             lines.append(f"Тема ходатайства: {request['petition_topic']}")
 
-        if request.get('doc_name'):
+        if request.get("doc_name"):
             lines.append(f"Документ: {request['doc_name']}")
 
     text = "\n".join(lines)
 
     await bot.send_message(chat_id, text)
 
-    file_path = request.get('file_path')
-    attachment_type = request.get('attachment_type')
-    attachment_name = request.get('attachment_name', 'файл')
+    file_path = request.get("file_path")
+    attachment_type = request.get("attachment_type")
+    attachment_name = request.get("attachment_name", "файл")
 
     if not is_unusual and file_path:
         try:
-            if attachment_type == 'photo':
+            if attachment_type == "photo":
                 if os.path.exists(file_path):
                     await bot.send_photo(chat_id, photo=FSInputFile(file_path))
                 else:
                     await bot.send_message(chat_id, f"⚠️ Фото не найдено: {file_path}")
-            elif attachment_type == 'document':
+            elif attachment_type == "document":
                 if os.path.exists(file_path):
                     await bot.send_document(chat_id, document=FSInputFile(file_path))
                 else:
-                    await bot.send_message(chat_id, f"⚠️ Документ не найден: {file_path}")
-            elif attachment_type == 'link':
+                    await bot.send_message(
+                        chat_id, f"⚠️ Документ не найден: {file_path}"
+                    )
+            elif attachment_type == "link":
                 await bot.send_message(chat_id, f"🔗 Ссылка: {file_path}")
             else:
-                await bot.send_message(chat_id, f"📎 Прикреплён файл: {attachment_name} (путь: {file_path})")
+                await bot.send_message(
+                    chat_id,
+                    f"📎 Прикреплён файл: {attachment_name} (путь: {file_path})",
+                )
         except Exception as e:
             logger.error(f"Ошибка отправки медиа: {e}")
-            await bot.send_message(chat_id, f"⚠️ Ошибка при отправке вложения. Путь: {file_path}")
-
+            await bot.send_message(
+                chat_id, f"⚠️ Ошибка при отправке вложения. Путь: {file_path}"
+            )

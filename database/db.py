@@ -143,6 +143,10 @@ class Database:
         petition_topic=None,
         doc_name=None,
     ):
+
+        if not await self.user_exists(user_id):
+            await self.add_user(user_id, None)
+
         async with aiosqlite.connect(self.db_path) as db:
             await db.execute(
                 """

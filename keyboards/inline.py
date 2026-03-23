@@ -10,7 +10,7 @@ def get_main_menu_keyboard() -> InlineKeyboardMarkup:
     builder.button(text="🚎 Транспорт", callback_data="transport")
     builder.button(text="❓ Частые вопросы", callback_data="usual_q")
     builder.button(text="⁉️ Особые вопросы", callback_data="unusual_q")
-    builder.button(text="📄 Документы", callback_data="doc_menu")
+    builder.button(text="📄 Запрос на документы", callback_data="doc_menu")
     builder.adjust(2, 2, 1)
     return builder.as_markup()
 
@@ -24,21 +24,9 @@ def get_social_submenu_keyboard() -> InlineKeyboardMarkup:
     builder.button(text="🏥 ЗДРАВПУНКТ", callback_data="social_about")
     builder.button(text="🙏 УСЛУГИ", callback_data="social_contacts")
     builder.button(text="🌳 ЭКОЛОГИЯ", callback_data="social_esg")
-    builder.button(text="🔙 Назад", callback_data="back_to_main")
-    builder.adjust(2, 1)
-    return builder.as_markup()
-
-
-# ==================== STUDY ====================
-
-
-def get_study_submenu_keyboard() -> InlineKeyboardMarkup:
-    """Подменю для раздела Обучение"""
-    builder = InlineKeyboardBuilder()
-    builder.button(text="💻 ПЛАТФОРМА", callback_data="platform")
     builder.button(text="⛪️ ЦЕРКОВЬ", callback_data="church")
     builder.button(text="🔙 Назад", callback_data="back_to_main")
-    builder.adjust(2, 1)
+    builder.adjust(2, 2)
     return builder.as_markup()
 
 
@@ -48,8 +36,8 @@ def get_study_submenu_keyboard() -> InlineKeyboardMarkup:
 def get_transport_submenu_keyboard() -> InlineKeyboardMarkup:
     """Подменю для раздела Транспорт"""
     builder = InlineKeyboardBuilder()
-    builder.button(text="📅 АВТОБУС", callback_data="schedule_1")
-    builder.button(text="📅 МАРШРУТКА", callback_data="schedule_2")
+    builder.button(text="📅 КАМЕН.ГОРКА", callback_data="schedule_1")
+    builder.button(text="📅 МАЛИНОВКА", callback_data="schedule_2")
     builder.button(text="🚗 ПАРКОВКА", callback_data="parking")
     builder.button(text="🔙 Назад", callback_data="back_to_main")
     builder.adjust(2, 1)
@@ -64,7 +52,7 @@ def get_usual_submenu_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     builder.button(text="🪥 ГИГИЕНА", callback_data="hygiene")
     builder.button(text="🍽️ ПИТАНИЕ", callback_data="canteen")
-    builder.button(text="💸 ЗП", callback_data="salary")
+    builder.button(text="💸 ЗАРАБОТНАЯ ПЛАТА", callback_data="salary")
     builder.button(text="🔙 Назад", callback_data="back_to_main")
     builder.adjust(2, 1)
     return builder.as_markup()

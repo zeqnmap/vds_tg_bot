@@ -2,6 +2,7 @@ import asyncio
 
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.types import BotCommand
 
 from config import (BOT_TOKEN, DATABASE_PATH, NOTIFICATION_CHAT_ID,
                     NOTIFICATION_INTERVAL)
@@ -11,6 +12,13 @@ from services.notifier import monitor_new_requests
 from utils.logger_conf import setup_logger
 
 logger = setup_logger(__name__)
+
+
+async def set_bot_commands(bot: Bot):
+    commands = [
+        BotCommand(command="start", description="Начать работу с ботом"),
+    ]
+    await bot.set_my_commands(commands)
 
 
 async def main():
@@ -25,6 +33,7 @@ async def main():
     dp["db"] = db
 
     await db.create_tables()
+    await set_bot_commands(bot)
     logger.info("Bot started!")
 
     if NOTIFICATION_CHAT_ID:

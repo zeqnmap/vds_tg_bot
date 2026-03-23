@@ -35,19 +35,21 @@ async def process_fullname(message: Message, state: FSMContext):
     await state.update_data(fullname=fullname)
     await state.set_state(UnusualQuestion.phone)
 
-    keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="🔙 Назад", callback_data="back_to_main")]
-    ])
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text="🔙 Назад", callback_data="back_to_main")]
+        ]
+    )
     await message.answer(
         "📞 Введите ваш контактный номер телефона (12 цифр, например + 375 (29) 1234567):",
-        reply_markup=keyboard
+        reply_markup=keyboard,
     )
 
 
 @router.message(UnusualQuestion.phone)
 async def process_phone(message: Message, state: FSMContext):
     """Проверка телефона (12 цифр), переход к вводу вопроса"""
-    digits = ''.join(filter(str.isdigit, message.text or ""))
+    digits = "".join(filter(str.isdigit, message.text or ""))
     if len(digits) != 12:
         await message.answer("❌ Номер должен содержать 12 цифр. Попробуйте ещё раз:")
         return
