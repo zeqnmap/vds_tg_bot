@@ -95,6 +95,12 @@ class Database:
                     return User(user_id=row["user_id"], username=row["username"])
                 return None
 
+    async def get_username(self, user_id: int) -> Optional[str]:
+        async with aiosqlite.connect(self.db_path) as db:
+            async with db.execute('SELECT username FROM users WHERE user_id = ?', (user_id,)) as cursor:
+                row = await cursor.fetchone()
+                return row[0] if row else None
+
     async def get_all_users(self):
         async with aiosqlite.connect(self.db_path) as db:
             db.row_factory = aiosqlite.Row

@@ -96,8 +96,7 @@ async def send_notification(bot: Bot, chat_id: str, request: dict, db: Database)
     is_unusual = request.get("doc_type") == "unusual"
     logger.info(f"start")
     user_id = request.get('user_id')
-    user = await db.get_user(user_id) if user_id else None
-    username = f"@{user.username}" if user and user.username else "нет username"
+    username = await db.get_username(user_id)
 
     logger.info(f"Found {username} new requests with id {user_id}")
 
@@ -111,7 +110,7 @@ async def send_notification(bot: Bot, chat_id: str, request: dict, db: Database)
     if request.get("phone"):
         lines.append(f"Номер: {request['phone']}")
 
-    lines.append(f"От: {request.get('fullname')} \nЧат: {username} (tg://user?id={user_id})")
+    lines.append(f"От: {request.get('fullname')} \nЧат: @{username} (tg://user?id={user_id})")
 
     if not is_unusual:
         lines.append(f"Организация: {request.get('organization', 'не указана')}")
