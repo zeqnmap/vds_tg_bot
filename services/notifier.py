@@ -1,5 +1,5 @@
 import asyncio
-import logging
+from utils.logger_conf import setup_logger
 import os
 
 from aiogram import Bot
@@ -7,7 +7,7 @@ from aiogram.types import FSInputFile
 
 from database.db import Database
 
-logger = logging.getLogger(__name__)
+logger = setup_logger(__name__)
 
 DOC_TYPE_NAMES = {
     "salary": "Справка о заработной плате",
@@ -74,7 +74,7 @@ async def monitor_new_requests(
                 logger.info(f"Найдено {len(new_requests)} новых заявок")
                 for req in new_requests:
                     try:
-                        await send_notification(bot, chat_id, req)
+                        await send_notification(bot, chat_id, req, db)
                     except Exception as e:
                         logger.error(
                             f"Ошибка при отправке уведомления для заявки #{req['id']}: {e}",
@@ -82,8 +82,7 @@ async def monitor_new_requests(
                         )
                     finally:
                         await db.update_last_processed_notification_id(req["id"])
-            else:
-                logger.debug("Новых заявок нет")
+
 
         except Exception as e:
             logger.error(f"Критическая ошибка в мониторинге: {e}", exc_info=True)
@@ -91,10 +90,16 @@ async def monitor_new_requests(
         await asyncio.sleep(interval)
 
 
-async def send_notification(bot: Bot, chat_id: str, request: dict):
+async def send_notification(bot: Bot, chat_id: str, request: dict, db: Database):
     """Отправляет уведомление: сначала текст, затем медиа (если есть локальный файл или ссылка)."""
     doc_name = DOC_TYPE_NAMES.get(request.get("doc_type"), request.get("doc_type"))
     is_unusual = request.get("doc_type") == "unusual"
+    logger.info(f"start")
+    user_id = request.get('user_id')
+    user = await db.get_user(user_id) if user_id else None
+    username = f"@{user.username}" if user and user.username else "нет username"
+
+    logger.info(f"Found {username} new requests with id {user_id}")
 
     lines = []
     lines.append(
@@ -106,7 +111,7 @@ async def send_notification(bot: Bot, chat_id: str, request: dict):
     if request.get("phone"):
         lines.append(f"Номер: {request['phone']}")
 
-    lines.append(f"От: {request.get('fullname')} (ID: {request.get('user_id')})")
+    lines.append(f"От: {request.get('fullname')} \nЧат: {username} (tg://user?id={user_id})")
 
     if not is_unusual:
         lines.append(f"Организация: {request.get('organization', 'не указана')}")
