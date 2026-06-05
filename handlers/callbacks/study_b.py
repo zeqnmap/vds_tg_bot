@@ -13,14 +13,14 @@ router = Router()
 async def social_contacts_callback(callback: CallbackQuery):
     """Текст Платформа"""
     contacts_text = (
-        "💻 В Компании есть платформа дистанционного обучения:\n\n"
+        "💻 <b>В Компании есть платформа дистанционного обучения:</b>\n\n"
         "   • Логин и пароль от вашего личного кабинета на платформу вам выдаст HR специалист.\n"
         "   • В первый день назначаются курсы, которые понадобятся вам в процессе работы.\n"
-        "   • ВАЖНО пройти их в течение первого месяца работы‼️\n\n"
-        "Дополнительно:\n"
+        "   • <b>ВАЖНО пройти их в течение первого месяца работы</b>‼️\n\n"
+        "<b>Дополнительно:</b>\n"
         "   • Доступен каталог курсов по профессиям, навыкам\n"
         "   • Есть библиотека с книгами\n\n"
-        "📱 Как зайти:\n"
+        "📱 <b>Как зайти:</b>\n"
         "   • Через браузер: vds.ispring.ru\n"
         "   • Через приложение iSpring Learn\n\n"
         "Также можно скачать приложение:\n\n"
@@ -33,5 +33,5 @@ async def social_contacts_callback(callback: CallbackQuery):
             [InlineKeyboardButton(text="← Назад", callback_data="back_to_main")]
         ]
     )
-    await callback.message.edit_text(contacts_text, reply_markup=back_keyboard)
-    await callback.answer()
+    await callback.message.edit_text(contacts_text, reply_markup=back_keyboard, parse_mode="HTML")
+    await callback.answer(parse_mode="HTML")

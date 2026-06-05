@@ -23,9 +23,9 @@ async def start_unusual(callback: CallbackQuery, state: FSMContext):
     await state.set_state(UnusualQuestion.fullname)
     await state.update_data(doc_type="unusual")
     await callback.message.edit_text(
-        "⁉️ Задайте ваш особый вопрос.\n\nВведите Ваши ФИО:"
+        "⁉️ <b>Задайте ваш особый вопрос.</b>\n\nВведите Ваши ФИО:", parse_mode="HTML"
     )
-    await callback.answer()
+    await callback.answer(parse_mode="HTML")
 
 
 @router.message(UnusualQuestion.fullname)

@@ -13,8 +13,8 @@ router = Router()
 @router.callback_query(F.data == "usual_q")
 async def social_menu_callback(callback: CallbackQuery):
     """Показывает подменю Обычные вопросы"""
-    text = "❓Вопросы\n\nВыберите интересующий раздел:"
-    await callback.message.edit_text(text, reply_markup=get_usual_submenu_keyboard())
+    text = "❓<b>Вопросы\n\nВыберите интересующий раздел:</b>"
+    await callback.message.edit_text(text, reply_markup=get_usual_submenu_keyboard(), parse_mode="HTML")
     await callback.answer()
 
 
@@ -22,9 +22,9 @@ async def social_menu_callback(callback: CallbackQuery):
 async def social_contacts_callback(callback: CallbackQuery):
     """Текст 'Гигиена'"""
     contacts_text = (
-        "🪥 ЛИЧНАЯ ГИГИЕНА:\n\n"
+        "🪥 <b>ЛИЧНАЯ ГИГИЕНА:</b>\n\n"
         "   • В гардеробе предусмотрены персональные шкафчики, душевые, фен.\n\n"
-        "   • На территории Завода от проходной до гардероба ЗАПРЕЩЕНО находиться в шортах и в открытой обуви.\n\n"
+        "   • На территории Завода от проходной до гардероба <b>ЗАПРЕЩЕНО</b> находиться в шортах и в открытой обуви.\n\n"
         "   • Обратите внимание, что в гардеробе отсутствуют полотенце-сушители, предусмотрите для себя каждый день чистое свежее полотенце."
     )
 
@@ -37,7 +37,7 @@ async def social_contacts_callback(callback: CallbackQuery):
             ]
         ]
     )
-    await callback.message.edit_text(contacts_text, reply_markup=back_keyboard)
+    await callback.message.edit_text(contacts_text, reply_markup=back_keyboard, parse_mode="HTML")
     await callback.answer()
 
 
@@ -45,7 +45,7 @@ async def social_contacts_callback(callback: CallbackQuery):
 async def social_contacts_callback(callback: CallbackQuery):
     """Текст 'Питание'"""
     contacts_text = (
-        "🍽️ Питание:\n\n"
+        "🍽️ <b>Питание:</b>\n\n"
         "   • На территории Завода расположена Столовая, где подаются горячие обеды из фермерских продуктов. Оплата проводится по вашему пропуску и расчет производится в конце месяца из суммы ЗП.\n\n"
         "   • Сумма комплексного обеда — 6,50 руб. Компот, горячий чай и хлеб всегда в доступе без ограничений.\n\n"
         "Оценить качество блюд можно в опросе по ссылке:\n"
@@ -61,7 +61,7 @@ async def social_contacts_callback(callback: CallbackQuery):
             ]
         ]
     )
-    await callback.message.edit_text(contacts_text, reply_markup=back_keyboard)
+    await callback.message.edit_text(contacts_text, reply_markup=back_keyboard, parse_mode="HTML")
     await callback.answer()
 
 
@@ -69,7 +69,7 @@ async def social_contacts_callback(callback: CallbackQuery):
 async def social_contacts_callback(callback: CallbackQuery):
     """Текст 'ЗП'"""
     contacts_text = (
-        "💸 ЗАРАБОТНАЯ ПЛАТА:\n\n"
+        "💸 <b>ЗАРАБОТНАЯ ПЛАТА:</b>\n\n"
         "Выплачивается 2 раза в месяц:\n"
         "АВАНС — 10 числа\n"
         "ЗАРПЛАТА —  25 числа\n\n"
@@ -87,7 +87,7 @@ async def social_contacts_callback(callback: CallbackQuery):
             ]
         ]
     )
-    await callback.message.edit_text(contacts_text, reply_markup=back_keyboard)
+    await callback.message.edit_text(contacts_text, reply_markup=back_keyboard, parse_mode="HTML")
     await callback.answer()
 
 

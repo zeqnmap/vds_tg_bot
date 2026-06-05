@@ -18,14 +18,14 @@ sent_messages = {}
 async def transport_menu_callback(callback: CallbackQuery):
     """Показывает подменю Транспорт"""
     text = (
-        "🚎 Транспорт\n\n"
+        "🚎 <b>Транспорт</b>\n\n"
         "В Компании организована доставка сотрудников по двум направлениям:\n\n"
         "1) Игуменский тракт - ст.м. «Институт культуры» - ст.м. «Пушкинская» - ст.м. «Каменная горка»\n"
         "2) ст.м. «Малиновка»\n\n"
         "Выберите интересующий раздел:"
     )
 
-    await callback.message.answer(text, reply_markup=get_transport_submenu_keyboard())
+    await callback.message.answer(text, reply_markup=get_transport_submenu_keyboard(), parse_mode="HTML")
     await callback.answer()
     await callback.message.delete()
 
@@ -59,7 +59,7 @@ async def schedule_callback(callback: CallbackQuery):
             "Файлы с расписанием не найдены. Обратитесь к администратору.",
             reply_markup=back_keyboard,
         )
-        await callback.answer()
+        await callback.answer(parse_mode="HTML")
         return
 
     sent_msgs = await callback.message.answer_media_group(media=photos)
@@ -75,7 +75,7 @@ async def schedule_callback(callback: CallbackQuery):
         ]
     )
     back_msg = await callback.message.answer(
-        "🚌 Расписание автобуса", reply_markup=back_keyboard
+        "🚌 <b>Расписание автобуса</b>", reply_markup=back_keyboard, parse_mode="HTML"
     )
     msg_ids.append(back_msg.message_id)
 
@@ -128,7 +128,7 @@ async def schedule_callback(callback: CallbackQuery):
         ]
     )
     back_msg = await callback.message.answer(
-        "🚐 Расписание маршрутки", reply_markup=back_keyboard
+        "🚐 <b>Расписание маршрутки</b>", reply_markup=back_keyboard, parse_mode="HTML"
     )
     msg_ids.append(back_msg.message_id)
 
@@ -144,7 +144,7 @@ async def schedule_callback(callback: CallbackQuery):
 async def transport_car_callback(callback: CallbackQuery):
     """Текст 'Парковка'"""
     contacts_text = (
-        "🚗 ПАРКОВКА:\n\n"
+        "🚗 <b>ПАРКОВКА:</b>\n\n"
         "Парковаться можно вдоль дороги или на горизонтальной парковке перед входом в офис рядом с проходной.\n\n"
         "   • В случае если вы перекрыли выезд другому припаркованному автомобилю, обязательно оставьте под стеклом свой контактный номер телефона.\n\n"
         "   • Места на парковке под шлагбаумом и на вертикальной парковке у входа в офиса закреплены за действующими сотрудниками и по мере возможности будут перераспределятся.\n\n"
@@ -160,8 +160,8 @@ async def transport_car_callback(callback: CallbackQuery):
             ]
         ]
     )
-    await callback.message.edit_text(contacts_text, reply_markup=back_keyboard)
-    await callback.answer()
+    await callback.message.edit_text(contacts_text, reply_markup=back_keyboard, parse_mode='HTML',)
+    await callback.answer(parse_mode="HTML")
 
 
 @router.callback_query(F.data == "back_to_transport_park")
@@ -186,11 +186,11 @@ async def back_to_transport_callback(callback: CallbackQuery):
         del sent_messages[user_id]
 
     text = (
-        "🚎 Транспорт\n\n"
+        "🚎 <b>Транспорт</b>\n\n"
         "В Компании организована доставка сотрудников по двум направлениям:\n\n"
         "1) Игуменский тракт - ст.м. «Институт культуры» - ст.м. «Пушкинская» - ст.м. «Каменная горка»\n"
         "2) ст.м. «Малиновка»\n\n"
         "Выберите интересующий раздел:"
     )
-    await callback.message.answer(text, reply_markup=get_transport_submenu_keyboard())
-    await callback.answer()
+    await callback.message.answer(text, reply_markup=get_transport_submenu_keyboard(), parse_mode='HTML',)
+    await callback.answer(parse_mode="HTML")

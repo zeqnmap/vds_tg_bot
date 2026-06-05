@@ -74,7 +74,7 @@ async def monitor_new_requests(
                 logger.info(f"Найдено {len(new_requests)} новых заявок")
                 for req in new_requests:
                     try:
-                        await send_notification(bot, chat_id, req, db)
+                        await send_notification(bot, chat_id, req)
                     except Exception as e:
                         logger.error(
                             f"Ошибка при отправке уведомления для заявки #{req['id']}: {e}",
@@ -90,27 +90,17 @@ async def monitor_new_requests(
         await asyncio.sleep(interval)
 
 
-async def send_notification(bot: Bot, chat_id: str, request: dict, db: Database):
+async def send_notification(bot: Bot, chat_id: str, request: dict):
     """Отправляет уведомление: сначала текст, затем медиа (если есть локальный файл или ссылка)."""
     doc_name = DOC_TYPE_NAMES.get(request.get("doc_type"), request.get("doc_type"))
     is_unusual = request.get("doc_type") == "unusual"
     logger.info(f"start")
-    user_id = request.get('user_id')
-    username = await db.get_username(user_id)
 
-    logger.info(f"Found {username} new requests with id {user_id}")
 
-    lines = []
-    lines.append(
-        "🆕 НОВАЯ ЗАЯВКА НА ДОКУМЕНТ" if not is_unusual else "❓ ОСОБЫЙ ВОПРОС"
-    )
-    lines.append("")
-    lines.append(f"Тип: {doc_name}")
+    lines = ["🆕 НОВАЯ ЗАЯВКА НА ДОКУМЕНТ" if not is_unusual else "❓ ОСОБЫЙ ВОПРОС", "", f"Тип: {doc_name}"]
 
     if request.get("phone"):
         lines.append(f"Номер: {request['phone']}")
-
-    lines.append(f"От: {request.get('fullname')} \nЧат: @{username} (tg://user?id={user_id})")
 
     if not is_unusual:
         lines.append(f"Организация: {request.get('organization', 'не указана')}")

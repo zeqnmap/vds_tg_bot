@@ -9,8 +9,8 @@ router = Router()
 @router.callback_query(F.data == "back_to_main")
 async def back_to_main_callback(callback: CallbackQuery):
     """Возврат в главное меню"""
-    text = "👋 **Главное меню**\n\nВыберите действие:"
+    text = "👋 <b>Главное меню</b>\n\nВыберите действие:"
     await callback.message.edit_text(
-        text, reply_markup=get_main_menu_keyboard(), parse_mode="Markdown"
+        text, reply_markup=get_main_menu_keyboard(), parse_mode="HTML"
     )
     await callback.answer()
