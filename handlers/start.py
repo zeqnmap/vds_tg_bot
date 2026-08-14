@@ -20,7 +20,7 @@ async def cmd_start(message: Message, db: Database):
     await db.add_user(user_id, username)
 
     welcome_text = (
-        f"👋 Привет, {message.from_user.full_name}!\n\n"
+        f"<b>👋 Привет, {message.from_user.full_name}!</b>\n\n"
         "Я бот Компании VDS — помогу вам быстро сориентироваться и найти нужную информацию.\n\n"
         "Здесь вы можете узнать о жизни Компании, процессах, возможностях и важных сервисах."
         "Если вы только начинаете свой путь с нами — это отличная точка входа 🚀\n\n"
@@ -28,6 +28,6 @@ async def cmd_start(message: Message, db: Database):
     )
 
     await message.answer(
-        welcome_text, reply_markup=get_main_menu_keyboard(), parse_mode="Markdown"
+        welcome_text, reply_markup=get_main_menu_keyboard(), parse_mode="html"
     )
     logger.info(f"User {user_id} started the bot")
