@@ -97,7 +97,12 @@ async def send_notification(bot: Bot, chat_id: str, request: dict):
     logger.info(f"start")
 
 
-    lines = ["🆕 НОВАЯ ЗАЯВКА НА ДОКУМЕНТ" if not is_unusual else "❓ ОСОБЫЙ ВОПРОС", "", f"Тип: {doc_name}"]
+    lines = [
+        "🆕 НОВАЯ ЗАЯВКА НА ДОКУМЕНТ" if not is_unusual else "❓ ОСОБЫЙ ВОПРОС",
+        "",
+        f"Тип: {doc_name}",
+        f"ФИО: {request.get('fullname') or 'не указано'}",
+    ]
 
     if request.get("phone"):
         lines.append(f"Номер: {request['phone']}")
